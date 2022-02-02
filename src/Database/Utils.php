@@ -73,15 +73,15 @@ trait Utils
      *
      * @param array $Column
      * @param string $Separator
-     * @return array
+     * @return string
      */
-    public function setColumnSeparator(array $Column, string $Separator):array
+    public function setColumnSeparator(array $Column, string $Separator):string
     {
         $ColumnWithSeparator = [];
         foreach ($Column as $column => $value) {
             $ColumnWithSeparator[$this->setSeparator($column, $Separator)] =  $this->cleanHarmCharacter($value);
         }
-        return $ColumnWithSeparator;
+        return implode(', ', $ColumnWithSeparator);
     }
 
     public function setSeparator(string $Word, string $Separator):string

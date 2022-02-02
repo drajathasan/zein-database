@@ -2,8 +2,8 @@
 /**
  * @author Drajat Hasan
  * @email drajathasan20@gmail.com
- * @create date 2022-02-01 22:28:06
- * @modify date 2022-02-01 22:28:06
+ * @create date 2022-02-02 13:53:37
+ * @modify date 2022-02-02 13:53:37
  * @license GPLv3
  * @desc [description]
  */
@@ -11,10 +11,10 @@
 namespace Zein\Database\Model;
 
 use ReflectionClass;
-use Zein\Database\Connection;
 use Zein\Database\Query\Builder;
+use Zein\Database\SLiMSConnection;
 
-class Model extends Contract
+class SLiMSModel 
 {
     use Shorthand;
 
@@ -23,6 +23,11 @@ class Model extends Contract
      */
     private static $Builder;
     private static $Connection;
+
+    /**
+     * Primary Key
+     */
+    protected $PrimaryKey = 'id';
 
     /**
      * 
@@ -59,13 +64,13 @@ class Model extends Contract
 
     private function builder()
     {
-        if (is_null(self::$Connection)) self::$Connection = new Connection;
+        if (is_null(self::$Connection)) self::$Connection = new SLiMSConnection;
 
         $Class = new ReflectionClass($this);
         if (empty($this->Table)) $this->Table = strtolower($Class->getShortName());
 
         if (is_null(self::$Builder))
-            self::$Builder = new Builder(self::$Connection, $this->Table);
+            self::$Builder = new Builder(self::$Connection, $this->Table, $this->PrimaryKey);
 
         return self::$Builder;
     }
@@ -73,10 +78,5 @@ class Model extends Contract
     public function __get($name)
     {
         if (array_key_exists($name, $this->data)) return $this->data[$name];
-    }
-
-    public function __set($name, $value)
-    {
-        $this->data[$name] = $value;
     }
 }

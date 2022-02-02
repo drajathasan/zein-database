@@ -52,6 +52,11 @@ class Builder
     private $State = 'select';
 
     /**
+     * Primary Key
+     */
+    private $PrimaryKey = 'id';
+
+    /**
      * Undocumented variable
      *
      * @var array
@@ -66,17 +71,21 @@ class Builder
     private $MarkType = 'named';
 
 
-    public function __construct(\Zein\Database\Connection $Connection, string $tablename)
+    /**
+     * Query Builder contructor
+     */
+    public function __construct($Connection, string $tablename, string $PrimaryKey)
     {
         $this->Connection = $Connection;
         $this->Table = $tablename;
+        $this->PrimaryKey = $PrimaryKey;
     }
 
     public function select():Builder
     {
         $this->State = 'select';
 
-        if (func_num_args() > 1)
+        if (func_num_args() > 0 && func_get_args()[0] !== '*')
             $this->Column = $this->setColumnSeparator(func_get_args(), '`');
 
         return $this;
@@ -110,7 +119,9 @@ class Builder
         $State = $Link->prepare($this->result());
         $State->execute($this->Criteria);
 
-        if ($State->rowCount()) $this->Data = $State->fetch(\PDO::FETCH_ASSOC);
+        if ($State->rowCount() === 1) $this->Data = $State->fetch(\PDO::FETCH_ASSOC);
+
+        if ($State->rowCount() > 1) return $this->many($State);
 
         return $this;
     }

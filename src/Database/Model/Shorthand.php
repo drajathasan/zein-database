@@ -11,6 +11,7 @@
 namespace Zein\Database\Model;
 
 use PDO;
+use ReflectionClass;
 
 trait Shorthand
 {
@@ -23,11 +24,27 @@ trait Shorthand
         $Builder = $Static->Builder();
 
         // Make query statement
-        $State = $Builder->where('biblio_id', $primaryKey)->from($Static->table)->get();
+        $State = $Builder->where($Static->PrimaryKey, $primaryKey)->from($Static->Table)->get();
         
         if (count($State->Data) > 0)
         {
             return $State;
         }
-    }    
+    }
+    
+    public function all(array $Column = [])
+    {
+        // Create static instance
+        $Static = new static;
+
+        // Igniate query builder
+        $Builder = $Static->Builder();
+
+        if (count($Column)) call_user_func_array([$Builder, 'select'], $Column);
+
+        // Make query statement
+        $State = $Builder->from($Static->Table)->get();
+        
+        if (count($State)) return $State;
+    }
 }

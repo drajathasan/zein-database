@@ -10,6 +10,10 @@
 
 namespace Zein\Database\Query;
 
+use PDO;
+use PDOStatement;
+use Zein\Database\Model\Model;
+
 trait Compose
 {
     public function result()
@@ -28,6 +32,19 @@ trait Compose
                 break;
         }
 
+        return $Result;
+    }
+
+    public function many(PDOStatement $Statement)
+    {
+        $Result = [];
+        while ( $Data = $Statement->fetch(PDO::FETCH_ASSOC) ) {
+            $Model = new Model;
+            foreach ($Data as $key => $value) {
+                $Model->$key = $value;
+            }
+            $Result[] = $Model;
+        }
         return $Result;
     }
 }
