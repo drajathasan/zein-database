@@ -1,0 +1,23 @@
+{
+    "name": "zein/database",
+    "description": "PHP Database library",
+    "type": "library",
+    "require": {
+        "ext-pdo": "^7.4",
+        "ext-json": "^7.4",
+        "php": "^7.4"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Zein\\Database\\": "src/Database/",
+            "App\\": "app/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Drajat Hasan",
+            "email": "drajathasan20@gmail.com"
+        }
+    ]
+}

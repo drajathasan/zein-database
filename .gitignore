@@ -1,0 +1,4 @@
+app/Models/*.php
+test.php
+vendor/
+composer.lock
