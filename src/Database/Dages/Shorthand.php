@@ -8,7 +8,7 @@
  * @desc [description]
  */
 
-namespace Zein\Database\Model;
+namespace Zein\Database\Dages;
 
 use PDO;
 use ReflectionClass;
@@ -25,11 +25,8 @@ trait Shorthand
 
         // Make query statement
         $State = $Builder->where($Static->PrimaryKey, $primaryKey)->from($Static->Table)->get();
-        
-        if (count($State->Data) > 0)
-        {
-            return $State;
-        }
+
+        return $State;
     }
     
     public function all(array $Column = [])

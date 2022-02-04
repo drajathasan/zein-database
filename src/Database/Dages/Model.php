@@ -8,7 +8,7 @@
  * @desc [description]
  */
 
-namespace Zein\Database\Model;
+namespace Zein\Database\Dages;
 
 use ReflectionClass;
 use Zein\Database\Connection;
@@ -27,12 +27,17 @@ class Model extends Contract
     /**
      * 
      */
-    protected $table = '';
+    protected $Table = '';
 
     /**
      * 
      */
-    protected $data = [];
+    protected $Data = [];
+
+    public function __construct(string $TableName = '')
+    {
+        $this->Table = $TableName;
+    }
 
     public function __call($name, $arguments)
     {
@@ -72,11 +77,11 @@ class Model extends Contract
 
     public function __get($name)
     {
-        if (array_key_exists($name, $this->data)) return $this->data[$name];
+        if (array_key_exists($name, $this->Data)) return $this->Data[$name];
     }
 
     public function __set($name, $value)
     {
-        $this->data[$name] = $value;
+        $this->Data[$name] = $value;
     }
 }

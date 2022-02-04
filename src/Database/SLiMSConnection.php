@@ -29,6 +29,11 @@ class SLiMSConnection
     private function connect()
     {
         $this->link = new PDO($this->dsn, $this->username, $this->password, $this->options);
+        
+        foreach ($this->options as $PDOOptions)
+        {
+            $this->link->setAttribute($PDOOptions[0], $PDOOptions[1]);
+        }
     }
     
     public function getLink()

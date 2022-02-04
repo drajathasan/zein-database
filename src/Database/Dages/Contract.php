@@ -8,14 +8,14 @@
  * @desc [description]
  */
 
-namespace Zein\Database\Model;
+namespace Zein\Database\Dages;
 
 use Zein\Database\Query\Builder;
 
 abstract class Contract
 {
     private static $Builder;
-    protected $data = [];
+    protected $Data = [];
 
     public static function __callStatic($name, $arguments)
     {

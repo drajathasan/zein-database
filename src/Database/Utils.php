@@ -29,7 +29,12 @@ trait Utils
                 break;
             
             case 'where':
-                return substr_replace( implode(' = ? AND ', array_keys($Column)) , '', -5);
+                $Criteria = '';
+                foreach ($Column as $column => $value) {
+                    $Criteria .= $this->setSeparator($column, "`") . ' = ? AND ';
+                }
+                $this->Criteria = array_values($this->Criteria);
+                return substr_replace($Criteria, '', -5);
                 break;
             
             default:
@@ -57,7 +62,14 @@ trait Utils
             case 'where':
                 $Criteria = '';
                 foreach ($Column as $column => $value) {
-                    $Criteria .= $this->setSeparator($column, "`") . ' = :' . $this->cleanHarmCharacter($column) . ' AND ';
+                    $Criteria .= $this->setSeparator($column, "`") . ' = :' . $this->removeDot($this->cleanHarmCharacter($column)) . ' AND ';
+                }
+                foreach ($this->Criteria as $key => $value) {
+                    if (strpos($key, '.'))
+                    {
+                        $this->Criteria[$this->removeDot($key)] = $value;
+                        unset($this->Criteria[$key]);
+                    }
                 }
                 return substr_replace($Criteria, '', -5);
                 break;
@@ -79,18 +91,38 @@ trait Utils
     {
         $ColumnWithSeparator = [];
         foreach ($Column as $column => $value) {
-            $ColumnWithSeparator[$this->setSeparator($column, $Separator)] =  $this->cleanHarmCharacter($value);
+            $ColumnWithSeparator[] = $this->isHavingAlias($this->cleanHarmCharacter($value));
         }
         return implode(', ', $ColumnWithSeparator);
     }
 
+    /**
+     * Set separator
+     * 
+     * @param string $Word
+     * @param string $Separator
+     * @return string
+     */
     public function setSeparator(string $Word, string $Separator):string
     {
+        if (strpos($Word, '.'))
+        {
+            $Word = explode('.', trim($Word));
+            return trim($Separator) . $this->cleanHarmCharacter($Word[0]) . trim($Separator) . '.' .
+                   trim($Separator) . $this->cleanHarmCharacter($Word[1]) . trim($Separator);
+        }
+
         return trim($Separator) . $this->cleanHarmCharacter($Word) . trim($Separator);
     }
 
+    /**
+     * Clean Harmfull Character
+     * 
+     * @param string $Character
+     * @return string
+     */
     public function cleanHarmCharacter(string $Character)
     {
-        return preg_replace('/[\'\`\"\s+]/i', '', $Character);
+        return str_replace(['\'','"','`','-',';'], '', $Character);
     }
 }

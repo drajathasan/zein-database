@@ -10,11 +10,17 @@
 
 namespace Zein\Database\Query;
 
+use PDO;
+use PDOException;
 use Zein\Database\Utils;
 
 class Builder
 {
-    use Utils,Compose;
+    use Utils,
+        Compose,
+        Join,
+        Alias,
+        Error;
 
     /**
      * Undocumented variable
@@ -70,6 +76,31 @@ class Builder
      */
     private $MarkType = 'named';
 
+    /**
+     * Join
+     */
+    private $Join = [];
+
+    /**
+     * Order
+     */
+    private $OrderBy = '';
+
+    /**
+     * Data exists
+     */
+    public $Exists = false;
+
+    /**
+     * Limit and offset
+     */
+    private $Limit = 0;
+    private $Offset = '';
+
+    /**
+     * Error query processing
+     */
+    private $Error = [];
 
     /**
      * Query Builder contructor
@@ -96,7 +127,7 @@ class Builder
         $this->Table = $this->setSeparator($TableName, '`');
         return $this;
     }
-
+ 
     public function where():Builder
     {
         $Arguments = func_get_args();
@@ -113,17 +144,66 @@ class Builder
         return $this;
     }
 
-    public function get()
+    public function orderBy($Column, string $OrderType = ''):Builder
     {
-        $Link = $this->Connection->getLink();
-        $State = $Link->prepare($this->result());
-        $State->execute($this->Criteria);
-
-        if ($State->rowCount() === 1) $this->Data = $State->fetch(\PDO::FETCH_ASSOC);
-
-        if ($State->rowCount() > 1) return $this->many($State);
+        if (is_callable($Column))
+        {
+            $this->OrderBy = trim($Column());
+        }
+        else
+        {
+            $this->OrderBy = trim($this->setSeparator($Column, '`') . ' ' . $this->cleanHarmCharacter($OrderType));
+        }
 
         return $this;
+    }
+
+    public function limit(int $Limit, $Offset = ''):Builder
+    {
+        $this->Limit = $Limit;
+        if (is_numeric($Offset)) $this->Offset = $Offset;
+
+        return $this;
+    }
+
+    public function setMarkType(string $MarkTypeName):Builder
+    {
+        $this->MarkType = $MarkTypeName;
+        return $this;
+    }
+
+    public function dump()
+    {
+        return trim($this->result() . PHP_EOL);
+    }
+
+    public function get(bool $Debug = false)
+    {
+        try {
+            
+            $State = $this
+                        ->Connection
+                        ->getLink()
+                        ->prepare(trim($this->result()));
+
+            $State->execute($this->Criteria);
+
+            if ($State->rowCount() === 1) 
+            {
+                $this->Exists = true;
+                return $this->single($State);
+            }
+
+            if ($State->rowCount() > 1)
+            {
+                $this->Exists = true;
+                return $this->many($State);
+            }
+
+        } catch (PDOException $e) {
+            $this->setError($e);
+            if ($Debug) return $this->Error;
+        }
     }
 
     public function __get($name)
