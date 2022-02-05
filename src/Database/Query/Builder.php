@@ -3,7 +3,7 @@
  * @author Drajat Hasan
  * @email drajathasan20@gmail.com
  * @create date 2022-02-01 22:23:08
- * @modify date 2022-02-01 22:23:08
+ * @modify date 2022-02-05 20:47:07
  * @license GPLv3
  * @desc [description]
  */
@@ -20,7 +20,9 @@ class Builder
         Compose,
         Join,
         Alias,
-        Error;
+        Error,
+        Limit,
+        Reset;
 
     /**
      * Undocumented variable
@@ -193,6 +195,63 @@ class Builder
             'query' => trim($this->result()),
             'execute' => $this->Criteria
         ];
+    }
+
+    public function update(array $Data, bool $Debug = false)
+    {
+        $this->State = 'update';
+        $this->Data = $Data;
+
+        try {
+            $State = $this
+                        ->Connection
+                        ->getLink()
+                        ->prepare(trim($this->result()));
+            $State->execute($this->Criteria);
+
+            return $State->rowCount();
+
+        } catch (PDOException $e) {
+            $this->setError($e);
+            if ($Debug) return $this->Error;
+        }
+    }
+    
+    public function insert(array $Data, bool $Debug = false)
+    {
+        $this->State = 'insert';
+        $this->Data = $Data;
+
+        try {
+            $Link = $this->Connection->getLink();
+            $State = $Link->prepare(trim($this->result()));
+            $State->execute($this->Criteria);
+
+            return $Link->lastInsertId();
+
+        } catch (PDOException $e) {
+            $this->setError($e);
+            if ($Debug) return $this->Error;
+        }
+    }
+
+    public function count(bool $Debug = false)
+    {
+        $this->Column = 'COUNT(' . $this->PrimaryKey . ')';
+
+        try {
+            $State = $this
+                        ->Connection
+                        ->getLink()
+                        ->prepare(trim($this->result()));
+            $State->execute($this->Criteria);
+
+            return (int)$State->fetch(PDO::FETCH_NUM)[0]??0;
+
+        } catch (PDOException $e) {
+            $this->setError($e);
+            if ($Debug) return $this->Error;
+        }
     }
 
     public function get(bool $Debug = false)

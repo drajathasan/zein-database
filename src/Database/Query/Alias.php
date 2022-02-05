@@ -53,6 +53,6 @@ trait Alias
             $Table = explode($Matching[0], $this->cleanHarmCharacter($Column));
             return $Table[0]??$Column;
         }
-        return $Column;
+        return $this->cleanHarmCharacter($Column);
     }
 }

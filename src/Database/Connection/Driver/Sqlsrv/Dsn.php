@@ -8,13 +8,13 @@
  * @desc [description]
  */
 
-namespace Zein\Database\Connection\Driver\MySQL;
+namespace Zein\Database\Connection\Driver\Sqlsrv;
 
 trait Dsn
 {
     public static function init(array $Attribute)
     {
-        $DSNString = 'mysql:';
+        $DSNString = 'sqlsrv:';
         foreach ($Attribute as $key => $value) {
             $DSNString .= $key . '=' . $value . ';';
         }

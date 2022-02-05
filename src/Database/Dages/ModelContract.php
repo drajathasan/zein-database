@@ -3,7 +3,7 @@
  * @author Drajat Hasan
  * @email drajathasan20@gmail.com
  * @create date 2022-02-02 13:53:37
- * @modify date 2022-02-02 13:53:37
+ * @modify date 2022-02-05 20:34:42
  * @license GPLv3
  * @desc [description]
  */
@@ -43,7 +43,7 @@ abstract class ModelContract
     /**
      * 
      */
-    protected $data = [];
+    protected $Data = [];
 
     public function __call($name, $arguments)
     {
@@ -94,11 +94,11 @@ abstract class ModelContract
 
     public function __get($name)
     {
-        if (array_key_exists($name, $this->data)) return $this->data[$name];
+        if (array_key_exists($name, $this->Data)) return $this->Data[$name];
     }
 
     public function __set($name, $value)
     {
-        $this->data[$name] = $value;
+        $this->Data[$name] = $value;
     }
 }

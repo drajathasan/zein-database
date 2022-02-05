@@ -36,6 +36,11 @@ class Connector
         return $this->link;
     }
 
+    public function getDriver()
+    {
+        return ucfirst(substr($this->dsn, 0, strpos($this->dsn, ':')));
+    }
+
     public function __sleep()
     {
         return array('dsn', 'username', 'password');

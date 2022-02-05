@@ -3,7 +3,7 @@
  * @author Drajat Hasan
  * @email drajathasan20@gmail.com
  * @create date 2022-02-04 11:22:26
- * @modify date 2022-02-04 11:22:26
+ * @modify date 2022-02-05 20:09:02
  * @license GPLv3
  * @desc [description]
  */
@@ -22,6 +22,8 @@ trait Error
     private function setError(object $ErrorObject)
     {
         $this->Error = [
+            'query' => $this->result(),
+            'execute' => $this->Criteria,
             'simple' => $ErrorObject->errorInfo,
             'file' => $ErrorObject->getFile(),
             'line' => $ErrorObject->getLine(),
