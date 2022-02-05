@@ -31,7 +31,16 @@ trait Utils
             case 'where':
                 $Criteria = '';
                 foreach ($Column as $column => $value) {
-                    $Criteria .= $this->setSeparator($column, "`") . ' = ? AND ';
+                    if (!is_array($value))
+                    {
+                        $Criteria .= $this->setSeparator($column) . ' = ? AND ';
+                    }
+                    else
+                    {
+                        $Criteria .= $this->setSeparator($column) . ' IN ('. rtrim(str_repeat('?,', count($value)), ',') .') AND ';
+                        unset($this->Criteria[$column]);
+                        $this->Criteria = array_merge($this->Criteria, $value);
+                    }
                 }
                 $this->Criteria = array_values($this->Criteria);
                 return substr_replace($Criteria, '', -5);
@@ -62,7 +71,7 @@ trait Utils
             case 'where':
                 $Criteria = '';
                 foreach ($Column as $column => $value) {
-                    $Criteria .= $this->setSeparator($column, "`") . ' = :' . $this->removeDot($this->cleanHarmCharacter($column)) . ' AND ';
+                    $Criteria .= $this->setSeparator($column) . ' = :' . $this->removeDot($this->cleanHarmCharacter($column)) . ' AND ';
                 }
                 foreach ($this->Criteria as $key => $value) {
                     if (strpos($key, '.'))
@@ -87,7 +96,7 @@ trait Utils
      * @param string $Separator
      * @return string
      */
-    public function setColumnSeparator(array $Column, string $Separator):string
+    public function setColumnSeparator(array $Column):string
     {
         $ColumnWithSeparator = [];
         foreach ($Column as $column => $value) {
@@ -103,16 +112,16 @@ trait Utils
      * @param string $Separator
      * @return string
      */
-    public function setSeparator(string $Word, string $Separator):string
+    public function setSeparator(string $Word):string
     {
         if (strpos($Word, '.'))
         {
             $Word = explode('.', trim($Word));
-            return trim($Separator) . $this->cleanHarmCharacter($Word[0]) . trim($Separator) . '.' .
-                   trim($Separator) . $this->cleanHarmCharacter($Word[1]) . trim($Separator);
+            return trim($this->Separator) . $this->cleanHarmCharacter($Word[0]) . trim($this->Separator) . '.' .
+                   trim($this->Separator) . $this->cleanHarmCharacter($Word[1]) . trim($this->Separator);
         }
 
-        return trim($Separator) . $this->cleanHarmCharacter($Word) . trim($Separator);
+        return trim($this->Separator) . $this->cleanHarmCharacter($Word) . trim($this->Separator);
     }
 
     /**
@@ -123,6 +132,6 @@ trait Utils
      */
     public function cleanHarmCharacter(string $Character)
     {
-        return str_replace(['\'','"','`','-',';'], '', $Character);
+        return str_replace(['\'','"','`','-',';','%'], '', $Character);
     }
 }

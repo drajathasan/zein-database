@@ -8,32 +8,27 @@
  * @desc [description]
  */
 
-namespace Zein\Database;
+namespace Zein\Database\Connection;
 
 use PDO;
 
-class SLiMSConnection
+class Connector
 {
     protected $link;
     private $dsn, $username, $password, $options;
     
-    public function __construct($options = [])
+    public function __construct($Profile)
     {
-        $this->dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME;
-        $this->username = DB_USERNAME;
-        $this->password = DB_PASSWORD;
-        $this->options = $options;
+        $this->dsn = $Profile['dsn'];
+        $this->username = $Profile['username'];
+        $this->password = $Profile['password'];
+        $this->options = $Profile['options'];
         $this->connect();
     }
     
     private function connect()
     {
         $this->link = new PDO($this->dsn, $this->username, $this->password, $this->options);
-        
-        foreach ($this->options as $PDOOptions)
-        {
-            $this->link->setAttribute($PDOOptions[0], $PDOOptions[1]);
-        }
     }
     
     public function getLink()

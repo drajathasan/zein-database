@@ -53,8 +53,8 @@ trait Join
         }
         else
         {
-            $joinRaw .= $this->setSeparator($arguments[1][0], '`') .
-                        $this->cleanHarmCharacter($arguments[1][1]) .
+            $joinRaw .= $this->setSeparator($arguments[1][0], '`') . ' ' .
+                        $this->cleanHarmCharacter($arguments[1][1]) . ' ' .
                         $this->setSeparator($arguments[1][2], '`');
         }
 

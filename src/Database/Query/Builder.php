@@ -30,6 +30,13 @@ class Builder
     private $Connection;
 
     /**
+     * Separator
+     *
+     * @var string
+     */
+    public $Separator = '`';
+
+    /**
      * Undocumented variable
      *
      * @var mix
@@ -74,7 +81,7 @@ class Builder
      *
      * @var string
      */
-    private $MarkType = 'named';
+    private $MarkType = 'question';
 
     /**
      * Join
@@ -117,14 +124,14 @@ class Builder
         $this->State = 'select';
 
         if (func_num_args() > 0 && func_get_args()[0] !== '*')
-            $this->Column = $this->setColumnSeparator(func_get_args(), '`');
+            $this->Column = $this->setColumnSeparator(func_get_args());
 
         return $this;
     }
 
     public function from(string $TableName):Builder
     {
-        $this->Table = $this->setSeparator($TableName, '`');
+        $this->Table = $this->setSeparator($TableName);
         return $this;
     }
  
@@ -134,13 +141,19 @@ class Builder
 
         switch (func_num_args()) {
             case 1:
-                $this->Criteria = $Arguments[0];
+                $this->Criteria = array_merge($this->Criteria, $Arguments[0]);
                 break;
             
             default:
                 $this->Criteria[$Arguments[0]] = $Arguments[1];
                 break;
         }
+        return $this;
+    }
+
+    public function whereIn(string $Column, array $Data):Builder
+    {
+        $this->Criteria = array_merge($this->Criteria, [$Column => $Data]);
         return $this;
     }
 
@@ -152,7 +165,7 @@ class Builder
         }
         else
         {
-            $this->OrderBy = trim($this->setSeparator($Column, '`') . ' ' . $this->cleanHarmCharacter($OrderType));
+            $this->OrderBy = trim($this->setSeparator($Column) . ' ' . $this->cleanHarmCharacter($OrderType));
         }
 
         return $this;
@@ -172,9 +185,14 @@ class Builder
         return $this;
     }
 
-    public function dump()
+    public function dump(bool $Detail = false)
     {
-        return trim($this->result() . PHP_EOL);
+        if (!$Detail) return trim($this->result() . PHP_EOL);
+
+        return [
+            'query' => trim($this->result()),
+            'execute' => $this->Criteria
+        ];
     }
 
     public function get(bool $Debug = false)

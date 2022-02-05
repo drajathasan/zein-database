@@ -13,9 +13,9 @@ namespace Zein\Database\Dages;
 use ReflectionClass;
 use PDO;
 use Zein\Database\Query\Builder;
-use Zein\Database\SLiMSConnection;
+use Zein\Database\Connection\Connector;
 
-class SLiMSModel 
+abstract class ModelContract 
 {
     use Shorthand;
 
@@ -26,6 +26,11 @@ class SLiMSModel
     private static $Connection;
 
     /**
+     * Connection profile
+     */
+    protected $ConnectionProfile = [];
+
+    /**
      * Primary Key
      */
     protected $PrimaryKey = 'id';
@@ -33,7 +38,7 @@ class SLiMSModel
     /**
      * 
      */
-    protected $table = '';
+    protected $Table = '';
 
     /**
      * 
@@ -62,16 +67,22 @@ class SLiMSModel
         if (method_exists($Static, $name))
             return call_user_func_array([$Static, $name], $arguments);
 
-        return call_user_func_array([self::$Builder, $name], $arguments);
+        return @call_user_func_array([self::$Builder, $name], $arguments);
     }
+
+    protected function createConnectionInit() {}
 
     private function builder()
     {
-        if (is_null(self::$Connection)) self::$Connection = new SLiMSConnection([[PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION]]);
+        if (is_null(self::$Connection)) 
+        {
+            $this->createConnectionInit();
+            self::$Connection = new Connector($this->ConnectionProfile);
+        }
 
         $Class = new ReflectionClass($this);
 
-        if (is_null($this->Table))
+        if (empty($this->Table))
         {
             $this->Table = strtolower($Class->getShortName());
         }

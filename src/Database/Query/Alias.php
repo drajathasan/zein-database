@@ -34,10 +34,10 @@ trait Alias
         if (preg_match('/(\sAS\s)|(\sas\s)/i', $Column, $Matching))
         {
             $Column = explode($Matching[0], $Column);
-            return $this->setSeparator($Column[0], '`') . ' AS ' . $this->setSeparator($Column[1], '`');
+            return $this->setSeparator($Column[0]) . ' AS ' . $this->setSeparator($Column[1]);
         }
 
-        return $this->setSeparator($Column, '`');
+        return $this->setSeparator($Column);
     }
 
     /**
