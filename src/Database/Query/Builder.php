@@ -235,6 +235,25 @@ class Builder
         }
     }
 
+    public function delete()
+    {
+        $this->State = 'delete';
+
+        try {
+            $State = $this
+                        ->Connection
+                        ->getLink()
+                        ->prepare(trim($this->result()));
+            $State->execute($this->Criteria);
+
+            return $State->rowCount();
+
+        } catch (PDOException $e) {
+            $this->setError($e);
+            if ($Debug) return $this->Error;
+        }
+    }
+
     public function count(bool $Debug = false)
     {
         $this->Column = 'COUNT(' . $this->PrimaryKey . ')';
@@ -246,7 +265,7 @@ class Builder
                         ->prepare(trim($this->result()));
             $State->execute($this->Criteria);
 
-            return (int)$State->fetch(PDO::FETCH_NUM)[0]??0;
+            return (int)@$State->fetch(PDO::FETCH_NUM)[0]??0;
 
         } catch (PDOException $e) {
             $this->setError($e);

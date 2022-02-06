@@ -12,6 +12,7 @@ namespace Zein\Database\Dages;
 
 use PDO;
 use ReflectionClass;
+use Zein\Database\Query\Builder;
 
 trait Shorthand
 {
@@ -60,17 +61,36 @@ trait Shorthand
     {
         if (!method_exists($this, 'Builder'))
         {
-            $Builder = new \Zein\Database\Query\Builder($this->Link, $this->Table, $this->PrimaryKey);
+            $Builder = new Builder($this->Link, $this->Table, $this->PrimaryKey);
             $Count = $Builder->where($this->PrimaryKey, $this->{$this->PrimaryKey})->count();
 
             $Builder->resetProperty(['Criteria' => []]);
 
-            return $Builder->where($this->PrimaryKey, $this->{$this->PrimaryKey})->update($this->Data, false);
+            $Update = $Builder->where($this->PrimaryKey, $this->{$this->PrimaryKey})->update($this->Data, false);
+            $this->removeLink();
+            return $Update;
         }
         else
         {
             $this->resetProperty(['Criteria' => []]);
-            return $this->insert($this->Data);
+            $Insert = $this->insert($this->Data);
+            $this->removeLink();
+            return $Insert;
         }
+    }
+    
+    public function findAndDelete($primaryKey)
+    {
+        // Create static instance
+        $Static = new static;
+
+        // Igniate query builder
+        $Builder = $Static->Builder();
+
+        // Make query statement
+        $isExists = $Builder->where($Static->PrimaryKey, $primaryKey)->from($Static->Table)->count();
+        $Builder->resetProperty(['Criteria' => []]);
+        
+        if ($isExists) return $Builder->where($Static->PrimaryKey, $primaryKey)->delete();
     }
 }

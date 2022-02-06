@@ -30,7 +30,7 @@ class Model
 
     public function __set($name, $value)
     {
-        $this->Data[$name] = $value;
+        if (!property_exists($this, $name)) $this->Data[$name] = $value;
     }
 
     public function __get($name)

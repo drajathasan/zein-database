@@ -101,4 +101,9 @@ abstract class ModelContract
     {
         $this->Data[$name] = $value;
     }
+
+    public function removeLink()
+    {
+        unset($this->ConnectionProfile);
+    }
 }

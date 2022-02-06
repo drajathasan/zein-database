@@ -36,6 +36,13 @@ trait Compose
                     $Result .= $this->generateLimit($this->Limit, (is_numeric($this->Offset)?$this->Offset:0));
                 break;
 
+            // Delete
+            case 'delete':
+                $Result = 'DELETE FROM ' . $this->isHavingAlias($this->Table);
+                if (count($this->Criteria)) 
+                    $Result .= ' WHERE ' . $this->$Marker($this->Criteria, 'where');
+                break;
+
             // Update && statement
             case 'insert':
             case 'update':
@@ -70,11 +77,10 @@ trait Compose
     public function single(PDOStatement $Statement)
     {
         $Model = new SLiMSModel($this->removeAlias($this->Table), $this->Connection, $this->PrimaryKey);
-        
         foreach ($Statement->fetch(PDO::FETCH_ASSOC) as $key => $value) {
             $Model->$key = $value;
         }
-
+        
         $Model->removeLink();
 
         return $Model;
