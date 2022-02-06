@@ -101,7 +101,13 @@ trait Utils
     {
         $ColumnWithSeparator = [];
         foreach ($Column as $column => $value) {
-            $ColumnWithSeparator[] = $this->isHavingAlias($this->cleanHarmCharacter($value));
+            if (is_string($value))
+            {
+                $ColumnWithSeparator[] = $this->isHavingAlias($this->cleanHarmCharacter($value));
+            } else if (is_callable($value))
+            {
+                $ColumnWithSeparator[] = $this->isHavingAlias($value());
+            }
         }
         return implode(', ', $ColumnWithSeparator);
     }

@@ -12,9 +12,8 @@ namespace Zein\Database\Dages;
 
 use PDO;
 
-class Model
+class SLiMSModel extends SLiMSModelContract
 {
-    private $Link;
     protected $Table = '';
     protected $PrimaryKey = '';
     protected $Data = [];
@@ -24,7 +23,6 @@ class Model
     public function __construct(string $TableName = '', $PrimaryKey = '')
     {
         $this->Table = $TableName;
-        $this->Link = $Link;
         $this->PrimaryKey = $PrimaryKey;
     }
 

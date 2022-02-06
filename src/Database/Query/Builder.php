@@ -91,9 +91,10 @@ class Builder
     private $Join = [];
 
     /**
-     * Order
+     * Order and Group
      */
     private $OrderBy = '';
+    private $GroupBy = '';
 
     /**
      * Data exists
@@ -159,6 +160,12 @@ class Builder
         return $this;
     }
 
+    public function groupBy($Column)
+    {
+        $this->GroupBy = (is_array($Column)) ? implode(',', $Column) : $Column;
+        return $this;
+    }
+
     public function orderBy($Column, string $OrderType = ''):Builder
     {
         if (is_callable($Column))
@@ -201,7 +208,7 @@ class Builder
     {
         $this->State = 'update';
         $this->Data = $Data;
-
+        
         try {
             $State = $this
                         ->Connection

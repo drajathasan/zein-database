@@ -28,7 +28,11 @@ class Connector
     
     private function connect()
     {
-        $this->link = new PDO($this->dsn, $this->username, $this->password, $this->options);
+        $this->link = new PDO($this->dsn, $this->username, $this->password);
+
+        foreach ($this->options as $option) {
+            $this->link->setAttribute($option[0],$option[1]);
+        }
     }
     
     public function getLink()

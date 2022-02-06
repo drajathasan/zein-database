@@ -25,7 +25,7 @@ trait Shorthand
         $Builder = $Static->Builder();
 
         // Make query statement
-        $State = $Builder->where($Static->PrimaryKey, $primaryKey)->from($Static->Table)->get();
+        $State = $Builder->where($Static->PrimaryKey, $primaryKey)->from($Static->Table)->get(true);
 
         return $State;
     }
@@ -57,29 +57,7 @@ trait Shorthand
         return $Builder->insert($Data);
     }
 
-    public function save()
-    {
-        if (!method_exists($this, 'Builder'))
-        {
-            $Builder = new Builder($this->Link, $this->Table, $this->PrimaryKey);
-            $Count = $Builder->where($this->PrimaryKey, $this->{$this->PrimaryKey})->count();
-
-            $Builder->resetProperty(['Criteria' => []]);
-
-            $Update = $Builder->where($this->PrimaryKey, $this->{$this->PrimaryKey})->update($this->Data, false);
-            $this->removeLink();
-            return $Update;
-        }
-        else
-        {
-            $this->resetProperty(['Criteria' => []]);
-            $Insert = $this->insert($this->Data);
-            $this->removeLink();
-            return $Insert;
-        }
-    }
-    
-    public function findAndDelete($primaryKey)
+    public function createBatch(array $Data)
     {
         // Create static instance
         $Static = new static;
@@ -87,10 +65,36 @@ trait Shorthand
         // Igniate query builder
         $Builder = $Static->Builder();
 
-        // Make query statement
-        $isExists = $Builder->where($Static->PrimaryKey, $primaryKey)->from($Static->Table)->count();
-        $Builder->resetProperty(['Criteria' => []]);
+        $Result = 0;
+        foreach ($Data as $Column) {
+            if ($Builder->insert($Column) > 0) $Result++;
+        }
+
+        return $Result;
+    }
+
+    public function save()
+    {
+        $Builder = $this->getBuilder();
         
-        if ($isExists) return $Builder->where($Static->PrimaryKey, $primaryKey)->delete();
+        if (count($this->Data) > 0)
+        {
+            return $this->where($this->PrimaryKey, $this->Data[$this->PrimaryKey])->update($this->Data);
+        }
+        else
+        {
+            return $this->insert($this->Data);
+        }
+
+    }
+    
+    public function delete()
+    {
+        $Builder = $this->getBuilder();
+
+        if (count($this->Data) > 0)
+        {
+            return $this->where($this->PrimaryKey, $this->Data[$this->PrimaryKey])->delete();
+        }
     }
 }

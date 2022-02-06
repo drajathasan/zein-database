@@ -12,7 +12,7 @@ namespace Zein\Database\Query;
 
 use PDO;
 use PDOStatement;
-use Zein\Database\Dages\Model as SLiMSModel;
+use Zein\Database\Dages\SLiMSModel;
 
 trait Compose
 {
@@ -30,8 +30,10 @@ trait Compose
                     $Result .= ' ' . implode(' ', $this->Join);
                 if (count($this->Criteria)) 
                     $Result .= ' WHERE ' . $this->$Marker($this->Criteria, 'where');
+                if (!empty($this->GroupBy))
+                    $Result .= ' GROUP BY ' . $this->cleanHarmCharacter($this->GroupBy);
                 if (!empty($this->OrderBy))
-                    $Result .= ' ORDER BY ' . $this->OrderBy;
+                    $Result .= ' ORDER BY ' . $this->cleanHarmCharacter($this->OrderBy);
                 if ($this->Limit > 0)
                     $Result .= $this->generateLimit($this->Limit, (is_numeric($this->Offset)?$this->Offset:0));
                 break;
@@ -43,15 +45,22 @@ trait Compose
                     $Result .= ' WHERE ' . $this->$Marker($this->Criteria, 'where');
                 break;
 
-            // Update && statement
+            // Insert statement
             case 'insert':
+                $Result = 'INSERT INTO ' . $this->setSeparator($this->Table) . ' SET ';
+                $Result .= $this->$Marker($this->Data, $this->State);
+                $this->Criteria = array_values($this->Data);
+                break;
+
+            // Update statement
             case 'update':
-                $Result = $this->cleanHarmCharacter(strtoupper($this->State)) . ' ' . $this->setSeparator($this->Table) . ' SET ';
+                $Result = 'UPDATE ' . $this->setSeparator($this->Table) . ' SET ';
                 $Result .= $this->$Marker($this->Data, $this->State);
                 if (count($this->Criteria)) 
                     $Result .= ' WHERE ' . $this->$Marker($this->Criteria, 'where');
 
                 $this->Criteria = array_values(array_merge($this->Data, $this->Criteria));
+                break;
 
             default:
                 # code...
@@ -65,7 +74,7 @@ trait Compose
     {
         $Result = [];
         while ( $Data = $Statement->fetch(PDO::FETCH_ASSOC) ) {
-            $Model = new SLiMSModel($this->removeAlias($this->Table));
+            $Model = new SLiMSModel($this->removeAlias($this->Table), $this->PrimaryKey);
             foreach ($Data as $key => $value) {
                 $Model->$key = $value;
             }
@@ -76,12 +85,10 @@ trait Compose
 
     public function single(PDOStatement $Statement)
     {
-        $Model = new SLiMSModel($this->removeAlias($this->Table), $this->Connection, $this->PrimaryKey);
+        $Model = new SLiMSModel($this->removeAlias($this->Table), $this->PrimaryKey);
         foreach ($Statement->fetch(PDO::FETCH_ASSOC) as $key => $value) {
             $Model->$key = $value;
         }
-        
-        $Model->removeLink();
 
         return $Model;
     }
