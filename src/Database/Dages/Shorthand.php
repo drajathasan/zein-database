@@ -16,7 +16,7 @@ use Zein\Database\Query\Builder;
 
 trait Shorthand
 {
-    public function find($primaryKey)
+    public static function find($primaryKey)
     {
         // Create static instance
         $Static = new static;
@@ -30,7 +30,7 @@ trait Shorthand
         return $State;
     }
     
-    public function all(array $Column = [])
+    public static function all(array $Column = [])
     {
         // Create static instance
         $Static = new static;
@@ -46,7 +46,7 @@ trait Shorthand
         return $State;
     }
 
-    public function create(array $Data)
+    public static function create(array $Data)
     {
         // Create static instance
         $Static = new static;
@@ -57,7 +57,7 @@ trait Shorthand
         return $Builder->insert($Data);
     }
 
-    public function createBatch(array $Data)
+    public static function createBatch(array $Data)
     {
         // Create static instance
         $Static = new static;
