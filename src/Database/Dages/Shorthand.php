@@ -77,15 +77,8 @@ trait Shorthand
     {
         $Builder = $this->getBuilder();
         
-        if (count($this->Data) > 0)
-        {
-            return $this->where($this->PrimaryKey, $this->Data[$this->PrimaryKey])->update($this->Data);
-        }
-        else
-        {
-            return $this->insert($this->Data);
-        }
-
+        $update = $this->where($this->PrimaryKey, $this->Data[$this->PrimaryKey])->update($this->Data);
+        return  $update == 0 ?$this->insert($this->Data) : $update;
     }
     
     public function delete()
