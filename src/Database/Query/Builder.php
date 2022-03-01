@@ -105,7 +105,7 @@ class Builder
      * Limit and offset
      */
     private $Limit = 0;
-    private $Offset = '';
+    private $Offset = ''; 
 
     /**
      * Error query processing
