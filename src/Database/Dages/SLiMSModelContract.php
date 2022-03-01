@@ -40,6 +40,7 @@ abstract class SLiMSModelContract
      * Timestamp
      */
     protected $Timestamp = true;
+    protected $Dateformat = 'Y-m-d H:i:s';
     const CREATED_AT = 'created_at';
     const UPDATED_AT = 'updated_at';
 
