@@ -77,8 +77,17 @@ trait Shorthand
     {
         $Builder = $this->getBuilder();
         
+        if ($this->Timestamp && !isset($this->Data[UPDATED_AT])) $this->Data[UPDATED_AT] = date('Y-m-d H:i:s');
+
         $update = $this->where($this->PrimaryKey, $this->Data[$this->PrimaryKey])->update($this->Data);
-        return  $update == 0 ?$this->insert($this->Data) : $update;
+        
+        if ($update == 0)
+        {
+            if ($this->Timestamp && !isset($this->Data[CREATED_AT])) $this->Data[CREATED_AT] = date('Y-m-d H:i:s');
+            return $this->insert($this->Data);
+        }
+
+        return $update;
     }
     
     public function delete()
