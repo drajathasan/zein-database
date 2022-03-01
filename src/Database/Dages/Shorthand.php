@@ -25,7 +25,7 @@ trait Shorthand
         $Builder = $Static->Builder();
 
         // Make query statement
-        $State = $Builder->where($Static->PrimaryKey, $primaryKey)->from($Static->Table)->get(true);
+        $State = $Builder->where($Static->PrimaryKey, $primaryKey)->get(true);
 
         return $State;
     }
@@ -41,7 +41,7 @@ trait Shorthand
         if (count($Column)) call_user_func_array([$Builder, 'select'], $Column);
 
         // Make query statement
-        $State = $Builder->from($Static->Table)->get();
+        $State = $Builder->get();
         
         return $State;
     }
