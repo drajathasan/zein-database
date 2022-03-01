@@ -76,14 +76,14 @@ trait Shorthand
     public function save()
     {
         $Builder = $this->getBuilder();
-        
-        if ($this->Timestamp) $this->Data[self::UPDATED_AT] = date($this->Dateformat);
+
+        if ($this->Timestamp) $this->Data[$this->Updated_at] = date($this->Dateformat);
 
         $update = $this->where($this->PrimaryKey, $this->Data[$this->PrimaryKey])->update($this->Data);
         
         if ($update == 0)
         {
-            if ($this->Timestamp) $this->Data[self::CREATED_AT] = date($this->Dateformat);
+            if ($this->Timestamp) $this->Data[$this->Created_at] = date($this->Dateformat);
             return $this->insert($this->Data);
         }
 

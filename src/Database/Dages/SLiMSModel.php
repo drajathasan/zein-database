@@ -19,8 +19,8 @@ class SLiMSModel extends SLiMSModelContract
     protected $Data = [];
     protected $Timestamp = true;
     protected $Dateformat = 'Y-m-d H:i:s';
-    const CREATED_AT = 'created_at';
-    const UPDATED_AT = 'updated_at';
+    protected $Created_at = 'created_at';
+    protected $Updated_at = 'updated_at';
 
     use Shorthand;
 

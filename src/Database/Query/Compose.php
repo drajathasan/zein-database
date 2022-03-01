@@ -74,7 +74,7 @@ trait Compose
     {
         $Result = [];
         while ( $Data = $Statement->fetch(PDO::FETCH_ASSOC) ) {
-            $Model = new SLiMSModel($this->removeAlias($this->Table), $this->PrimaryKey);
+            $Model = $Model = new $this->Model;
             foreach ($Data as $key => $value) {
                 $Model->$key = $value;
             }
@@ -85,7 +85,7 @@ trait Compose
 
     public function single(PDOStatement $Statement)
     {
-        $Model = new SLiMSModel($this->removeAlias($this->Table), $this->PrimaryKey);
+        $Model = new $this->Model;
         foreach ($Statement->fetch(PDO::FETCH_ASSOC) as $key => $value) {
             $Model->$key = $value;
         }

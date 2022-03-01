@@ -32,6 +32,11 @@ class Builder
     private $Connection;
 
     /**
+     * Model namespace
+     */
+    private $Model;
+
+    /**
      * Separator
      *
      * @var string
@@ -108,6 +113,14 @@ class Builder
     private $Offset = ''; 
 
     /**
+     * Timestamp
+     */
+    private $Dateformat = 'Y-m-d H:i:s';
+    private $Created_at = 'created_at';
+    private $Updated_at = 'updated_at';
+
+
+    /**
      * Error query processing
      */
     private $Error = [];
@@ -115,11 +128,11 @@ class Builder
     /**
      * Query Builder contructor
      */
-    public function __construct($Connection, string $tablename, string $PrimaryKey)
+    public function __construct(array $Property)
     {
-        $this->Connection = $Connection;
-        $this->Table = $tablename;
-        $this->PrimaryKey = $PrimaryKey;
+        foreach ($Property as $property => $value) {
+            $this->$property = $value;
+        }
     }
 
     public function select():Builder

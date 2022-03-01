@@ -41,8 +41,8 @@ abstract class SLiMSModelContract
      */
     protected $Timestamp = true;
     protected $Dateformat = 'Y-m-d H:i:s';
-    const CREATED_AT = 'created_at';
-    const UPDATED_AT = 'updated_at';
+    protected $Created_at = 'created_at';
+    protected $Updated_at = 'updated_at';
 
     /**
      * 
@@ -92,12 +92,19 @@ abstract class SLiMSModelContract
 
         $Class = new ReflectionClass($this);
 
-        if (empty($this->Table))
-        {
-            $this->Table = strtolower($Class->getShortName());
-        }
+        // get property
+        $Property = get_class_vars(get_class($this));
+        $Property['Model'] = $Class->getName();
 
-        self::$Builder = new Builder(self::$Connection, $this->Table, $this->PrimaryKey);
+        if (empty($Property['Table']))
+        {
+            $Property['Table'] = strtolower($Class->getShortName());
+        }
+        
+        unset($Property['Builder']);
+        unset($Property['Data']);
+
+        self::$Builder = new Builder($Property);
 
         return self::$Builder;
     }
