@@ -77,13 +77,13 @@ trait Shorthand
     {
         $Builder = $this->getBuilder();
         
-        if ($this->Timestamp && !isset($this->Data[UPDATED_AT])) $this->Data[UPDATED_AT] = date('Y-m-d H:i:s');
+        if ($this->Timestamp && !isset($this->Data[self::UPDATED_AT])) $this->Data[self::UPDATED_AT] = date('Y-m-d H:i:s');
 
         $update = $this->where($this->PrimaryKey, $this->Data[$this->PrimaryKey])->update($this->Data);
         
         if ($update == 0)
         {
-            if ($this->Timestamp && !isset($this->Data[CREATED_AT])) $this->Data[CREATED_AT] = date('Y-m-d H:i:s');
+            if ($this->Timestamp && !isset($this->Data[self::CREATED_AT])) $this->Data[self::CREATED_AT] = date('Y-m-d H:i:s');
             return $this->insert($this->Data);
         }
 
