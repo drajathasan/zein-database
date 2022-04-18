@@ -3,7 +3,7 @@
  * @author Drajat Hasan
  * @email drajathasan20@gmail.com
  * @create date 2022-02-01 22:03:39
- * @modify date 2022-02-05 20:40:00
+ * @modify date 2022-04-18 10:19:16
  * @license GPLv3
  * @desc [description]
  */
@@ -34,7 +34,7 @@ trait Utils
                 foreach ($Column as $column => $value) {
                     if (!is_array($value))
                     {
-                        $Criteria = $this->setSeparator($column) . ' = ? AND ';
+                        $Criteria .= $this->setSeparator($column) . ' = ? AND ';
                     }
                     else
                     {
