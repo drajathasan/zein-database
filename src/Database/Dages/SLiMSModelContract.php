@@ -10,15 +10,15 @@
 
 namespace Zein\Database\Dages;
 
-use ReflectionClass;
-use PDO;
+
+use ArrayIterator,IteratorAggregate,ReflectionClass,PDO;
 use Zein\Database\Query\Builder;
 use Zein\Database\Connection\Connector;
 use Zein\Database\Connection\Driver\Mysql\Dsn;
 
-abstract class SLiMSModelContract 
+abstract class SLiMSModelContract implements IteratorAggregate
 {
-    use Shorthand;
+    use Shorthand,Dsn;
 
     /**
      * Builder and Connection
@@ -47,7 +47,7 @@ abstract class SLiMSModelContract
     /**
      * 
      */
-    protected $Data = [];
+    public $Data = [];
 
     public function __call($name, $arguments)
     {
@@ -83,7 +83,7 @@ abstract class SLiMSModelContract
             if (!defined('ENVIRONMENT')) define('ENVIRONMENT', 'development');
 
             self::$Connection = new Connector([
-                'dsn' => Dsn::init(['host' => DB_HOST, 'port' => DB_PORT, 'dbname' => DB_NAME]),
+                'dsn' => self::init(['host' => DB_HOST, 'port' => DB_PORT, 'dbname' => DB_NAME]),
                 'username' => DB_USERNAME,
                 'password' => DB_PASSWORD,
                 'options' => [[PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION]]
@@ -101,6 +101,7 @@ abstract class SLiMSModelContract
             $Property['Table'] = strtolower($Class->getShortName());
         }
         
+        $Property['Connection'] = self::$Connection;
         unset($Property['Builder']);
         unset($Property['Data']);
 
@@ -132,5 +133,9 @@ abstract class SLiMSModelContract
     public function getBuilder()
     {
         return self::$Builder;
+    }
+
+    public function getIterator() {
+        return new ArrayIterator($this->Data);
     }
 }
