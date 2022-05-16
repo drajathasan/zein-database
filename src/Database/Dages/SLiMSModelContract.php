@@ -3,7 +3,7 @@
  * @author Drajat Hasan
  * @email drajathasan20@gmail.com
  * @create date 2022-02-02 13:53:37
- * @modify date 2022-02-05 20:34:42
+ * @modify date 2022-05-15 19:21:43
  * @license GPLv3
  * @desc [description]
  */
@@ -11,7 +11,7 @@
 namespace Zein\Database\Dages;
 
 
-use ArrayIterator,IteratorAggregate,ReflectionClass,PDO;
+use ArrayIterator,IteratorAggregate,ReflectionClass,PDO,Traversable;
 use Zein\Database\Query\Builder;
 use Zein\Database\Connection\Connector;
 use Zein\Database\Connection\Driver\Mysql\Dsn;
@@ -135,7 +135,8 @@ abstract class SLiMSModelContract implements IteratorAggregate
         return self::$Builder;
     }
 
-    public function getIterator() {
+    public function getIterator(): Traversable 
+    {
         return new ArrayIterator($this->Data);
     }
 }
