@@ -3,7 +3,7 @@
  * @author Drajat Hasan
  * @email drajathasan20@gmail.com
  * @create date 2022-02-01 23:26:54
- * @modify date 2022-02-05 20:53:35
+ * @modify date 2022-05-17 22:21:29
  * @license GPLv3
  * @desc [description]
  */
@@ -29,7 +29,7 @@ trait Compose
                 if (count($this->Join)) 
                     $Result .= ' ' . implode(' ', $this->Join);
                 if (count($this->Criteria)) 
-                    $Result .= ' WHERE ' . $this->$Marker($this->Criteria, 'where');
+                    $Result .= ' WHERE ' . $this->$Marker($this->Criteria, $this->WhereType);
                 if (!empty($this->GroupBy))
                     $Result .= ' GROUP BY ' . $this->cleanHarmCharacter($this->GroupBy);
                 if (!empty($this->OrderBy))
@@ -42,7 +42,7 @@ trait Compose
             case 'delete':
                 $Result = 'DELETE FROM ' . $this->isHavingAlias($this->Table);
                 if (count($this->Criteria)) 
-                    $Result .= ' WHERE ' . $this->$Marker($this->Criteria, 'where');
+                    $Result .= ' WHERE ' . $this->$Marker($this->Criteria, $this->WhereType);
                 break;
 
             // Insert statement
@@ -57,7 +57,7 @@ trait Compose
                 $Result = 'UPDATE ' . $this->setSeparator($this->Table) . ' SET ';
                 $Result .= $this->$Marker($this->Data, $this->State);
                 if (count($this->Criteria)) 
-                    $Result .= ' WHERE ' . $this->$Marker($this->Criteria, 'where');
+                    $Result .= ' WHERE ' . $this->$Marker($this->Criteria, $this->WhereType);
 
                 $this->Criteria = array_values(array_merge($this->Data, $this->Criteria));
                 break;

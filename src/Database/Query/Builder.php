@@ -3,7 +3,7 @@
  * @author Drajat Hasan
  * @email drajathasan20@gmail.com
  * @create date 2022-02-01 22:23:08
- * @modify date 2022-02-05 20:47:07
+ * @modify date 2022-05-17 22:37:56
  * @license GPLv3
  * @desc [description]
  */
@@ -63,6 +63,8 @@ class Builder
      * @var array
      */
     private $Criteria = [];
+    private $WhereType = 'where';
+    private $AllowableOperator = ['>=','<=','>','<','<>','IS NOT','NOT','IS','=','!='];
 
     /**
      * Undocumented variable
@@ -156,8 +158,8 @@ class Builder
         $Arguments = func_get_args();
 
         switch (func_num_args()) {
-            case 1:
-                $this->Criteria = array_merge($this->Criteria, $Arguments[0]);
+            case 3:
+                $this->Criteria = array_merge($this->Criteria, [$Arguments]);
                 break;
             
             default:

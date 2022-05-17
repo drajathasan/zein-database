@@ -3,7 +3,7 @@
  * @author Drajat Hasan
  * @email drajathasan20@gmail.com
  * @create date 2022-02-01 22:03:39
- * @modify date 2022-04-18 10:19:16
+ * @modify date 2022-05-17 22:39:20
  * @license GPLv3
  * @desc [description]
  */
@@ -29,6 +29,7 @@ trait Utils
                 return implode(' = ?, ', array_keys($Column)) . ' = ? ';
                 break;
             
+            case 'whereIn':
             case 'where':
                 $Criteria = '';
                 foreach ($Column as $column => $value) {
@@ -36,7 +37,12 @@ trait Utils
                     {
                         $Criteria .= $this->setSeparator($column) . ' = ? AND ';
                     }
-                    else
+                    else if (is_array($value))
+                    {
+                        $Criteria .= $this->setSeparator($value[0]) . ' ' . $this->cleanHarmCharacter(in_array($value[1], $this->AllowableOperator) ? $value[1] : '=') . ' ? AND ';
+                        $this->Criteria[$column] = $value[2];
+                    }
+                    else if (is_array($value) && $State === 'whereIn')
                     {
                         $Criteria .= $this->setSeparator($column) . ' IN ('. rtrim(str_repeat('?,', count($value)), ',') .') AND ';
                         unset($this->Criteria[$column]);

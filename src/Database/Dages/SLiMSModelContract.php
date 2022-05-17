@@ -3,7 +3,7 @@
  * @author Drajat Hasan
  * @email drajathasan20@gmail.com
  * @create date 2022-02-02 13:53:37
- * @modify date 2022-05-15 19:21:43
+ * @modify date 2022-05-17 21:26:15
  * @license GPLv3
  * @desc [description]
  */
@@ -11,14 +11,14 @@
 namespace Zein\Database\Dages;
 
 
-use ArrayIterator,IteratorAggregate,ReflectionClass,PDO,Traversable;
+use Countable,JsonSerializable,ReflectionClass,PDO,Traversable;
 use Zein\Database\Query\Builder;
 use Zein\Database\Connection\Connector;
 use Zein\Database\Connection\Driver\Mysql\Dsn;
 
-abstract class SLiMSModelContract implements IteratorAggregate
+abstract class SLiMSModelContract implements JsonSerializable,Countable
 {
-    use Shorthand,Dsn;
+    use Arrayable,Dsn,Magic,Shorthand;
 
     /**
      * Builder and Connection
@@ -47,32 +47,7 @@ abstract class SLiMSModelContract implements IteratorAggregate
     /**
      * 
      */
-    public $Data = [];
-
-    public function __call($name, $arguments)
-    {
-        $this->Builder();
-
-        if (method_exists(self::$Builder, $name))
-            return call_user_func_array([self::$Builder, $name], $arguments);
-
-        if (method_exists($this, $name))
-            return call_user_func_array([$this, $name], $arguments);
-    }
-
-    public static function __callStatic($name, $arguments)
-    {
-        $Static = new static;
-        $Static->Builder();
-
-        if (method_exists(self::$Builder, $name))
-            return call_user_func_array([self::$Builder, $name], $arguments);
-
-        if (method_exists($Static, $name))
-            return call_user_func_array([$Static, $name], $arguments);
-
-        return @call_user_func_array([self::$Builder, $name], $arguments);
-    }
+    protected $Data = [];
 
     protected function createConnectionInit() {}
 
@@ -95,9 +70,9 @@ abstract class SLiMSModelContract implements IteratorAggregate
         // get property
         $Property = get_class_vars(get_class($this));
         $Property['Model'] = $Class->getName();
-
         if (empty($Property['Table']))
         {
+            $this->Table = strtolower($Class->getShortName());
             $Property['Table'] = strtolower($Class->getShortName());
         }
         
@@ -108,16 +83,6 @@ abstract class SLiMSModelContract implements IteratorAggregate
         self::$Builder = new Builder($Property);
 
         return self::$Builder;
-    }
-
-    public function __get($name)
-    {
-        if (array_key_exists($name, $this->Data)) return $this->Data[$name];
-    }
-
-    public function __set($name, $value)
-    {
-        $this->Data[$name] = $value;
     }
 
     public function removeLink()
@@ -133,10 +98,5 @@ abstract class SLiMSModelContract implements IteratorAggregate
     public function getBuilder()
     {
         return self::$Builder;
-    }
-
-    public function getIterator(): Traversable 
-    {
-        return new ArrayIterator($this->Data);
-    }
+    }   
 }
