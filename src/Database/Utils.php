@@ -3,7 +3,7 @@
  * @author Drajat Hasan
  * @email drajathasan20@gmail.com
  * @create date 2022-02-01 22:03:39
- * @modify date 2022-05-17 22:39:20
+ * @modify date 2022-06-02 14:03:58
  * @license GPLv3
  * @desc [description]
  */
@@ -35,16 +35,16 @@ trait Utils
                 foreach ($Column as $column => $value) {
                     if (!is_array($value))
                     {
-                        $Criteria .= $this->setSeparator($column) . ' = ? AND ';
+                        $Criteria .= (preg_match('/\(|\)/i', $column) ? $column : $this->setSeparator($column)) . ' = ? AND ';
                     }
                     else if (is_array($value))
                     {
-                        $Criteria .= $this->setSeparator($value[0]) . ' ' . $this->cleanHarmCharacter(in_array($value[1], $this->AllowableOperator) ? $value[1] : '=') . ' ? AND ';
+                        $Criteria .= (preg_match('/\(|\)/i', $value[0]) ? $value[0] : $this->setSeparator($value[0])) . ' ' . $this->cleanHarmCharacter(in_array($value[1], $this->AllowableOperator) ? $value[1] : '=') . ' ? AND ';
                         $this->Criteria[$column] = $value[2];
                     }
                     else if (is_array($value) && $State === 'whereIn')
                     {
-                        $Criteria .= $this->setSeparator($column) . ' IN ('. rtrim(str_repeat('?,', count($value)), ',') .') AND ';
+                        $Criteria .= (preg_match('/\(|\)/i', $column) ? $column : $this->setSeparator($column)) . ' IN ('. rtrim(str_repeat('?,', count($value)), ',') .') AND ';
                         unset($this->Criteria[$column]);
                         $this->Criteria = array_merge($this->Criteria, $value);
                     }
@@ -52,7 +52,7 @@ trait Utils
                 $this->Criteria = array_values($this->Criteria);
                 return substr_replace($Criteria, '', -5);
                 break;
-            
+
             default:
                 return substr_replace( str_repeat("?,", count($Column) ) , '', -1);
                 break;
