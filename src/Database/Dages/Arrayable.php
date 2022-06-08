@@ -12,12 +12,12 @@ namespace Zein\Database\Dages;
 
 trait Arrayable
 {
-    public function count()
+    public function count():int
     {
         return $this->Data;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize():mixed
     {
         return $this->Data;
     }
