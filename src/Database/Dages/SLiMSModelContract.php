@@ -57,10 +57,11 @@ abstract class SLiMSModelContract implements JsonSerializable,Countable
         {
             if (!defined('ENVIRONMENT')) define('ENVIRONMENT', 'development');
 
+            $SLiMSDatabase = config('database.nodes.SLiMS');
             self::$Connection = new Connector([
-                'dsn' => self::init(['host' => DB_HOST, 'port' => DB_PORT, 'dbname' => DB_NAME]),
-                'username' => DB_USERNAME,
-                'password' => DB_PASSWORD,
+                'dsn' => self::init(['host' => $SLiMSDatabase['host'], 'port' => $SLiMSDatabase['port'], 'dbname' => $SLiMSDatabase['database']]),
+                'username' => $SLiMSDatabase['username'],
+                'password' => $SLiMSDatabase['password'],
                 'options' => [[PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION]]
             ]);
         }
